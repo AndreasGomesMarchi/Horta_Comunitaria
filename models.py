@@ -23,6 +23,8 @@ class Usuarios(Base):
     grupo = relationship("GruposUsuarios", back_populates="usuarios")
 
 
+
+
 class Hortas(Base):
     __tablename__ = 'hortas'
 

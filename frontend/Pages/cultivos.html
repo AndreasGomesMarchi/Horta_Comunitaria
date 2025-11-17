@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cultivos - Horta Comunitária</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>🌱 Gerenciamento de Cultivos</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+
+<section>
+    <h2>Novo Cultivo</h2>
+
+    <form id="form-cultivo">
+        <input type="number" id="id_produto" placeholder="ID do Produto" required>
+        <input type="number" id="id_parcela" placeholder="ID da Parcela" required>
+        <input type="date" id="data_plantio" required>
+
+        <select id="status_cultivo" required>
+            <option value="Plantado">Plantado</option>
+            <option value="Crescendo">Crescendo</option>
+            <option value="ProntoParaColheita">Pronto para Colheita</option>
+            <option value="Colhido">Colhido</option>
+        </select>
+
+        <button type="submit">Criar Cultivo</button>
+    </form>
+</section>
+
+<section>
+    <h2>Lista de Cultivos</h2>
+    <div id="cultivos-list"></div>
+</section>
+
+</main>
+
+<footer>
+    <p>© 2025 Horta Comunitária</p>
+</footer>
+
+<script src="cultivos.js"></script>
+<script>
+    carregarCultivos();
+
+    document.getElementById("form-cultivo").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const dados = {
+            id_produto: Number(id_produto.value),
+            id_parcela: Number(id_parcela.value),
+            data_plantio: data_plantio.value,
+            status_cultivo: status_cultivo.value
+        };
+
+        const ok = await criarCultivo(dados);
+
+        if (ok) {
+            alert("Cultivo registrado!");
+            carregarCultivos();
+            e.target.reset();
+        } else {
+            alert("Erro ao criar cultivo!");
+        }
+    });
+</script>
+
+</body>
+</html>

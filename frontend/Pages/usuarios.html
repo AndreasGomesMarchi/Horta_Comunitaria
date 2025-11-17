@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - Horta Comunitária</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>🌱 Usuários</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <h2>Criar Usuário</h2>
+        <form id="form-usuario">
+            <input type="text" id="nome" placeholder="Nome" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="telefone" placeholder="Telefone">
+            <input type="password" id="senha" placeholder="Senha" required>
+            <input type="text" id="id_grupo" placeholder="ID do Grupo">
+            <button type="submit">Criar</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Lista de Usuários</h2>
+        <div id="usuarios-list"></div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2025 Horta Comunitária</p>
+</footer>
+
+<script src="usuarios.js"></script>
+<script>
+// Inicializa lista de usuários
+    carregarUsuarios();
+
+    // Configura formulário de criação
+    document.getElementById("form-usuario").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const dados = {
+            nome: document.getElementById("nome").value,
+            email: document.getElementById("email").value,
+            telefone: document.getElementById("telefone").value,
+            senha: document.getElementById("senha").value,
+            id_grupo: document.getElementById("id_grupo").value
+        };
+        const sucesso = await criarUsuario(dados);
+        if(sucesso) {
+            e.target.reset();
+            carregarUsuarios();
+            alert("Usuário criado com sucesso!");
+        } else {
+            alert("Erro ao criar usuário.");
+        }
+    });
+</script>
+</body>
+</html>

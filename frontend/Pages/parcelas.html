@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcelas - Horta Comunitária</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>🌱 Parcelas</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="usuarios.html">Usuários</a></li>
+            <li><a href="produtos.html">Produtos</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <h2>Criar Parcela</h2>
+        <form id="form-parcela">
+            <input type="number" id="tamanho" placeholder="Tamanho (m²)" required>
+            <input type="text" id="localizacao" placeholder="Localização" required>
+            <select id="status">
+                <option value="Livre">Livre</option>
+                <option value="Cultivando">Cultivando</option>
+                <option value="Em Repouso">Em Repouso</option>
+            </select>
+            <button type="submit">Criar</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Lista de Parcelas</h2>
+        <div id="parcelas-list"></div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2025 Horta Comunitária</p>
+</footer>
+
+<script src="parcelas.js"></script>
+<script>
+// Inicializa lista de parcelas
+carregarParcelas();
+
+// Formulário de criação
+document.getElementById("form-parcela").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const dados = {
+        tamanho: document.getElementById("tamanho").value,
+        localizacao: document.getElementById("localizacao").value,
+        status: document.getElementById("status").value
+    };
+    const sucesso = await criarParcela(dados);
+    if(sucesso) {
+        e.target.reset();
+        carregarParcelas();
+        alert("Parcela criada com sucesso!");
+    } else {
+        alert("Erro ao criar parcela.");
+    }
+});
+</script>
+</body>
+</html>

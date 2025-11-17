@@ -31,22 +31,22 @@ app = FastAPI(title="Horta Comunitária API")
 
 origins = [
     "http://localhost",
-    "http://localhost:5500",  # porta do front HTML/JS
-    "*",  # ou usar "*" apenas em desenvolvimento
+    "http://127.0.0.1:5500",  # a porta que você estiver servindo seu HTML
+    "http://127.0.0.1:8000",  # backend local
+    "*",  # desenvolvimento
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # permite POST, GET, DELETE, OPTIONS...
+    allow_headers=["*"],  # permite cabeçalhos customizados
 )
 
 # criar tabelas (mantém sua linha)
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Horta Comunitária API")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 
@@ -70,6 +70,33 @@ def decode_token_email(token: str) -> str | None:
         return payload.get("sub")
     except JWTError:
         return None
+
+def obter_usuario_logado(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    """
+    Decodifica token, busca usuário no DB e retorna o objeto Usuarios.
+    Levanta HTTPException (401/404) quando apropriado.
+    """
+    email = decode_token_email(token)
+    if not email:
+        raise HTTPException(status_code=401, detail="Token inválido ou expirado")
+
+    usuario = db.query(Usuarios).filter_by(email=email).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    return usuario
+
+def exigir_grupo(*grupos_permitidos: int):
+    def dependency(usuario: Usuarios = Depends(obter_usuario_logado)):
+        if usuario.id_grupo not in grupos_permitidos:
+            raise HTTPException(status_code=403, detail="Sem permissão")
+        return usuario
+    return dependency
+
+
 
 # -----------------------
 # USUÁRIOS CRUD
@@ -126,6 +153,10 @@ def perfil(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     if not u:
         raise HTTPException(404, "Usuário não encontrado")
     return u
+
+@app.get("/usuarios", response_model=list[UsuarioOut])
+def listar_usuarios(db: Session = Depends(get_db)):
+    return db.query(Usuarios).all()
 
 # -----------------------
 # GRUPOS CRUD
@@ -195,6 +226,11 @@ def remover_horta(id_horta: str, db: Session = Depends(get_db)):
     log_action("hortas", "delete", {"id_horta": id_horta})
     return
 
+@app.get("/hortas")
+def listar_hortas(db: Session = Depends(get_db)):
+    hortas = db.query(Hortas).all()
+    return hortas
+
 
 # -----------------------
 # PRODUTOS CRUD
@@ -230,6 +266,10 @@ def remover_produto(id: int, db: Session = Depends(get_db)):
     log_action("produtos", "delete", {"id_produto": id})
     return
 
+@app.get("/produtos", response_model=list[ProdutoOut])
+def listar_produtos(db: Session = Depends(get_db)):
+    produtos = db.query(Produto).all()
+    return produtos
 
 # -----------------------
 # PARCELAS CRUD
@@ -265,6 +305,11 @@ def remover_parcela(id: int, db: Session = Depends(get_db)):
     log_action("parcelas", "delete", {"id_parcela": id})
     return
 
+@app.get("/parcelas", response_model=list[ParcelaOut])
+def listar_parcelas(db: Session = Depends(get_db)):
+    parcelas = db.query(Parcela).all()
+    return parcelas
+
 # -----------------------
 # EVENTOS CRUD
 # -----------------------
@@ -298,6 +343,10 @@ def remover_evento(id: int, db: Session = Depends(get_db)):
     db.commit()
     log_action("eventos", "delete", {"id_evento": id})
     return
+
+@app.get("/eventos")
+def listar_eventos(db: Session = Depends(get_db)):
+    return db.query(Evento).all()
 
 # -----------------------
 # PARTICIPACAO EVENTO (M:N)

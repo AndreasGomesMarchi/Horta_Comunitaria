@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Horta Comunitária</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>📅 Eventos da Horta</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+
+<section>
+    <h2>Novo Evento</h2>
+    <form id="form-evento">
+        <input type="text" id="nome" placeholder="Nome do Evento" required>
+        <input type="date" id="data" required>
+        <input type="text" id="descricao" placeholder="Descrição do evento">
+        <input type="text" id="local_evento" placeholder="Local do evento">
+        <button type="submit">Criar Evento</button>
+    </form>
+</section>
+
+<section>
+    <h2>Lista de Eventos</h2>
+    <div id="eventos-list"></div>
+</section>
+
+</main>
+
+<footer>
+    <p>© 2025 Horta Comunitária</p>
+</footer>
+
+<script src="eventos.js"></script>
+<script>
+    carregarEventos();
+
+    document.getElementById("form-evento").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const dados = {
+            nome: document.getElementById("nome").value,
+            data_evento: document.getElementById("data").value,
+            descricao: document.getElementById("descricao").value,
+            local_evento: document.getElementById("local_evento").value
+        };
+
+        const ok = await criarEvento(dados);
+
+        if (ok) {
+            alert("Evento criado!");
+            carregarEventos();
+            e.target.reset();
+        } else {
+            alert("Erro ao criar evento!");
+        }
+    });
+</script>
+
+</body>
+</html>
