@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+pymysql
+python-jose[cryptography]
+passlib[bcrypt]
+pymongo
+python-dotenv
